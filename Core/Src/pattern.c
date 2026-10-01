@@ -17,10 +17,10 @@ void Pattern_Clear(Pattern_t *p)
 uint8_t Pattern_LengthForDifficulty(Difficulty_t difficulty)
 {
     switch (difficulty) {
-        case DIFFICULTY_EASY: return 5;
-        case DIFFICULTY_HARD: return 10;
+        case DIFFICULTY_EASY: return 4;
+        case DIFFICULTY_HARD: return 8;
         case DIFFICULTY_MEDIUM:
-        default:               return 7;
+        default:               return 6;
     }
 }
 
@@ -45,11 +45,17 @@ void Pattern_Show(const Pattern_t *p)
 
 const char *Pattern_ColorName(uint8_t color)
 {
+    /* ต้องตรงกับสีไฟจริงบนชิลด์ STEO ตามลำดับขาใน led.c:
+     *   ดวงที่ 1 = PA5 = D13 = ฟ้า
+     *   ดวงที่ 2 = PA6 = D12 = แดง
+     *   ดวงที่ 3 = PA7 = D11 = เหลือง
+     *   ดวงที่ 4 = PB6 = D10 = เขียว
+     * ของเดิมใส่ชื่อสลับ (1=RED) ทำให้ข้อความ "Don't press" ระบุสีผิดไปคนละดวง */
     switch (color) {
-        case 1:  return "RED";
-        case 2:  return "YELLOW";
-        case 3:  return "GREEN";
-        case 4:  return "BLUE";
+        case 1:  return "BLUE";
+        case 2:  return "RED";
+        case 3:  return "YELLOW";
+        case 4:  return "GREEN";
         default: return "NONE";
     }
 }

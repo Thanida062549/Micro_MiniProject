@@ -6,16 +6,16 @@
 /* ----------------- ค่าคงที่ของเกม ----------------- */
 #define TOTAL_ROUNDS              5    /* จำนวนด่านทั้งหมดต่อเกม */
 #define HP_INIT                   3    /* พลังชีวิตเริ่มต้น (ด่านที่มีการกดผิด 3 ด่าน = game over) */
-#define PATTERN_MAX_LEN           10   /* ความยาว pattern สูงสุด (โหมดยาก = 10 ดวงทุกด่าน) */
+#define PATTERN_MAX_LEN           8    /* ความยาว pattern สูงสุด (โหมดยาก = 8 ดวงทุกด่าน) */
 
-#define NO_PRESS_PROBABILITY_PCT  20   /* โอกาส % ที่จะมีสีต้องห้ามในด่านนี้ */
+#define NO_PRESS_PROBABILITY_PCT  35   /* โอกาส % ที่จะมีสีต้องห้ามในด่านนี้ */
 #define BUZZ_PROBABILITY_PCT      40   /* โอกาส % ที่ต้องตอบย้อนลำดับ (buzzer ดัง) */
 
 /* ----------------- ระดับความยาก (เลือกจาก potentiometer + ปุ่ม 1 ยืนยัน ตอนเริ่มเกม) -----------------
  * ความยาก "คงที่ตลอดทั้ง 5 ด่าน" ไม่ไต่ระดับต่อด่านแล้ว:
- *   EASY   = 5 ดวงทุกด่าน
- *   MEDIUM = 7 ดวงทุกด่าน
- *   HARD   = 10 ดวงทุกด่าน */
+ *   EASY   = 4 ดวงทุกด่าน
+ *   MEDIUM = 6 ดวงทุกด่าน
+ *   HARD   = 8 ดวงทุกด่าน */
 typedef enum {
     DIFFICULTY_EASY   = 0,
     DIFFICULTY_MEDIUM = 1,

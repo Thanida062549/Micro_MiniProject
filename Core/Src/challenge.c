@@ -6,7 +6,7 @@
 #include "timer.h"
 #include <stdio.h>
 
-#define BUZZ_DURATION_MS   300
+#define BUZZ_DURATION_MS   500
 
 uint8_t Challenge_RollNoPress(uint8_t *out_forbidden_color)
 {
@@ -32,9 +32,9 @@ void Challenge_AnnounceRoundInfo(uint8_t forbidden_color, uint8_t is_reverse)
     char line[32];
 
     if (forbidden_color != 0) {
-        snprintf(line, sizeof(line), "Forbidden color: %s", Pattern_ColorName(forbidden_color));
+        snprintf(line, sizeof(line), "Don't press: %s", Pattern_ColorName(forbidden_color));
     } else {
-        snprintf(line, sizeof(line), "Forbidden color: NONE");
+        snprintf(line, sizeof(line), "Don't press: NONE");
     }
     BSP_UART_Print(line);
     BSP_UART_Print(is_reverse ? "Reverse: YES" : "Reverse: NO");
