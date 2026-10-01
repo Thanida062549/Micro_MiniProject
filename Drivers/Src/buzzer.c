@@ -1,37 +1,74 @@
 #include "buzzer.h"
 #include "timer.h"
+#include <stdint.h>
 
-/* =====================================================================
- * Buzzer driver สำหรับ STM32F411RE
- * Pin mapping: Buzzer = PC0 (output push-pull)
- * หมายเหตุ: PA8 ห้ามใช้ เพราะชิลด์ STEO ผูกไว้กับวงจร 7-segment แล้ว
- * ===================================================================== */
+#define GPIOC_BASE      0x40020800UL
+#define RCC_BASE        0x40023800UL
 
-#define RCC_BASE      0x40023800UL
-#define GPIOC_BASE    0x40020800UL
+#define RCC_AHB1ENR     (*(volatile uint32_t *)(RCC_BASE + 0x30))
 
-#define RCC_AHB1ENR   (*(volatile uint32_t *)(RCC_BASE + 0x30))
+#define GPIO_MODER      (*(volatile uint32_t *)(GPIOC_BASE + 0x00))
+#define GPIO_OTYPER     (*(volatile uint32_t *)(GPIOC_BASE + 0x04))
+#define GPIO_OSPEEDR    (*(volatile uint32_t *)(GPIOC_BASE + 0x08))
+#define GPIO_PUPDR      (*(volatile uint32_t *)(GPIOC_BASE + 0x0C))
+#define GPIO_BSRR       (*(volatile uint32_t *)(GPIOC_BASE + 0x18))
 
-#define GPIO_MODER(base)    (*(volatile uint32_t *)((base) + 0x00))
-#define GPIO_OTYPER(base)   (*(volatile uint32_t *)((base) + 0x04))
-#define GPIO_BSRR(base)     (*(volatile uint32_t *)((base) + 0x18))
+#define BUZZER_PIN      2
 
-#define BUZZER_BASE  GPIOC_BASE
-#define BUZZER_PIN   0
 
 void Buzzer_Init(void)
 {
-    RCC_AHB1ENR |= (1UL << 2); /* GPIOC */
+    /* เปิด Clock ให้ GPIOC */
+    RCC_AHB1ENR |= (1UL << 2);
 
-    GPIO_MODER(BUZZER_BASE)  &= ~(3UL << (BUZZER_PIN * 2));
-    GPIO_MODER(BUZZER_BASE)  |=  (1UL << (BUZZER_PIN * 2)); /* 01 = output */
-    GPIO_OTYPER(BUZZER_BASE) &= ~(1UL << BUZZER_PIN);       /* 0 = push-pull */
-    GPIO_BSRR(BUZZER_BASE)    = (1UL << (BUZZER_PIN + 16)); /* ปิดตั้งแต่เริ่ม */
+    /* PC2 = Output */
+    GPIO_MODER &= ~(3UL << (BUZZER_PIN * 2));
+    GPIO_MODER |=  (1UL << (BUZZER_PIN * 2));
+
+    /* Push-Pull */
+    GPIO_OTYPER &= ~(1UL << BUZZER_PIN);
+
+    /* High Speed */
+    GPIO_OSPEEDR &= ~(3UL << (BUZZER_PIN * 2));
+    GPIO_OSPEEDR |=  (3UL << (BUZZER_PIN * 2));
+
+    /* No Pull-up / Pull-down */
+    GPIO_PUPDR &= ~(3UL << (BUZZER_PIN * 2));
+
+    /*
+     * เริ่มเกม = ปิดเสียง
+     *
+     * การต่อ:
+     * HW-512 VCC/+ -> PC2
+     * HW-512 I/O   -> 3.3V
+     * HW-512 GND/- -> GND
+     *
+     * LOW  = ปิดเสียง
+     * HIGH = เปิดเสียง
+     */
+    GPIO_BSRR = (1UL << (BUZZER_PIN + 16));
 }
+
+
+void Buzzer_Stop(void)
+{
+    /* LOW = ปิดเสียง */
+    GPIO_BSRR = (1UL << (BUZZER_PIN + 16));
+}
+
 
 void BSP_Buzzer_Beep(uint16_t duration_ms)
 {
-    GPIO_BSRR(BUZZER_BASE) = (1UL << BUZZER_PIN);
+    /* HIGH = เปิดเสียง */
+    GPIO_BSRR = (1UL << BUZZER_PIN);
+
+    /*
+     * ดังตามเวลาที่กำหนด
+     */
     BSP_Delay_ms(duration_ms);
-    GPIO_BSRR(BUZZER_BASE) = (1UL << (BUZZER_PIN + 16));
+
+    /*
+     * ครบเวลาแล้วปิดทันที
+     */
+    GPIO_BSRR = (1UL << (BUZZER_PIN + 16));
 }

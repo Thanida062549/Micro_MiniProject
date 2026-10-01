@@ -15,14 +15,14 @@
  */
 void BSP_Init(void)
 {
-    Timer_Init();     /* ต้องมาก่อนเสมอ เพราะ driver อื่นใช้ BSP_Delay_ms ต่อ */
+    Timer_Init();
     Button_Init();
     LED_Init();
     Buzzer_Init();
     UART_Init();
-    ADC_Init();        /* ต้องมาหลัง Timer_Init เพราะข้างในมีการหน่วงเวลา stabilize */
+    ADC_Init();
+
     EXTI_Init();
 
-    /* seed ตัวสุ่มเลขด้วยค่าผสมจาก ADC noise + เวลา ณ ตอนบูต */
     Random_Seed(((uint32_t)ADC_ReadRaw() << 16) | Timer_GetTick());
 }
